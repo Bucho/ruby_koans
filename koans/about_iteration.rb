@@ -1,9 +1,16 @@
 require File.expand_path(File.dirname(__FILE__) + '/edgecase')
 
 class AboutIteration < EdgeCase::Koan
+  in_ruby_version("1.8") do
+    def test_each_is_a_method_on_arrays
+      assert_equal __, [].methods.include?("each")
+    end
+  end
 
-  def test_each_is_a_method_on_arrays
-    [].methods.include?("each")
+  in_ruby_version("1.9") do
+    def test_each_is_a_method_on_arrays
+      assert_equal __, [].methods.include?(:each)
+    end
   end
 
   def test_iterating_with_each
@@ -65,7 +72,7 @@ class AboutIteration < EdgeCase::Koan
     result = [2, 3, 4].inject(0) { |sum, item| sum + item }
     assert_equal __, result
 
-    result2 = [2, 3, 4].inject(1) { |sum, item| sum * item }
+    result2 = [2, 3, 4].inject(1) { |product, item| product * item }
     assert_equal __, result2
 
     # Extra Credit:

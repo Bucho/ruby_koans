@@ -2,7 +2,10 @@
 # -*- ruby -*-
 
 require 'test/unit/assertions'
-
+begin 
+  require 'win32console'
+rescue LoadError
+end
 # --------------------------------------------------------------------
 # Support code for the Ruby Koans.
 # --------------------------------------------------------------------
@@ -21,7 +24,7 @@ def in_ruby_version(*versions)
 end
 
 # Standard, generic replacement value.
-# If value19 is given, it is used inplace of value for Ruby 1.9.
+# If value19 is given, it is used in place of value for Ruby 1.9.
 def __(value="FILL ME IN", value19=:mu)
   if RUBY_VERSION < "1.9"
     value
@@ -93,15 +96,33 @@ module EdgeCase
     end
 
     def colorize(string, color_value)
-      if ENV['NO_COLOR']
-        string
-      else
+      if use_colors?
         color(color_value) + string + color(COLORS[:clear])
+      else
+        string
       end
     end
 
     def color(color_value)
       "\e[#{color_value}m"
+    end
+
+    def use_colors?
+      return false if ENV['NO_COLOR']
+      if ENV['ANSI_COLOR'].nil?
+        if using_windows?
+          using_win32console
+        end
+      else
+        ENV['ANSI_COLOR'] =~ /^(t|y)/i
+      end
+    end
+
+    def using_windows?
+      File::ALT_SEPARATOR
+    end
+    def using_win32console
+      defined? Win32::Console
     end
   end
 
